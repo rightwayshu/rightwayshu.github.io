@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <title>街景猜捷運站（含 20 秒倒數與計分）</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { margin:0; font-family: "Helvetica Neue", Arial, sans-serif; background:#fee55b; color:#fff; }
+    #startScreen { display:flex; justify-content:center; align-items:center; height:100vh; }
+    #gameArea { display:none; height:100%; flex-direction:column; }
+    .topBar {
+      position: fixed;
+      display: none;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      text-align:center;
+      width: min(600px, 95vw);
+      pointer-events: none;
+    }
+    #countdown {
+      font-size: 24px;
+      font-weight:700;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 14px;
+      border-radius: 8px;
+      display:inline-block;
+      pointer-events: auto;
+    }
+    .progressWrap { margin-top:8px; height:8px; background: rgba(255,255,255,0.12); border-radius:8px; overflow:hidden; }
+    .progressBar { height:100%; width:100%; transform-origin:left; }
+    #streetview { width:100vw; height:78vh; background:#222; display: none; }
+    .options { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; padding:14px; background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.35)); }
+    .optionBtn {
+      padding: 12px 18px;
+      font-size:18px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      min-width:140px;
+      pointer-events:auto;
+      background: rgb(71, 118, 185);
+      color:#000;
+      transition: transform .08s ease;
+    }
+    .optionBtn:active { transform: scale(.98); }
+    .optionBtn[disabled] { opacity:0.6; cursor:default; transform:none; }
+    .correct { background: #18b46a !important; }
+    .wrong { background: #e04b4b !important; }
+    .infoBar { display:flex; justify-content:space-between; align-items:center; padding:10px 16px; gap:12px; }
+    .scoreBox { font-size:18px; }
+    .statusMsg { font-size:16px; text-align:center; flex:1; }
+    .controlBtn {
+      padding:10px 16px; border-radius:8px; border:none; cursor:pointer; font-size:16px;
+      background:rgb(246, 246, 142); color:#000;
+    }
+    .hidden { display:none; }
+    #nextScreen {
+      display:none;
+      inset:0;
+      height: 100%;
+      background: rgba(0,0,0, 0.85);
+      color:white;
+      font-size:40px;
+      font-weight:bold;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:2000;
+    }
+    #nameInput {
+        padding: 12px;
+        font-size: 18px;
+        border-radius: 8px;
+        border: 1px solid rgb(93, 139, 255);
+        margin-right: 10px;
+    }
+    @media (max-width:600px){
+      .optionBtn { min-width:calc(40vw); font-size:16px; }
+      .infoBar { flex-direction:column; gap:5px; padding: 6px 10px;}
+      #streetview { height:62vh; }
+      #countdown { font-size:20px; padding:6px 10px; }
+      .options { padding:8px; }
+      .optionBtn { min-width:calc(40vw); padding:10px 15px; font-size:15px;min-width:80px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 起始畫面 -->
+  <div id="startScreen">
+    <div>
+      <h1 style="text-align:center; color:rgb(80, 150, 255)">街景猜捷運站</h1>
+      <p style="text-align:center; color:#5261ff">請輸入你的名字，每題 20 秒，答對會依回答時間給分。</p>
+      <div style="text-align:center; margin-top:20px;">
+        <input type="text" id="nameInput" placeholder="輸入你的名字">
+        <button id="startBtn" style="padding:18px 28px; font-size:20px; border-radius:12px; border:none; cursor:pointer; background:rgb(82, 203, 251); color:#000; margin-top: 10px;">
+          開始遊戲
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 過渡畫面（準備下一題） -->
+  <div id="nextScreen"></div>
+
+  <!-- 遊戲畫面 -->
+  <div id="gameArea" style="display:flex; flex-direction:column; min-height:100vh;">
+    <div class="topBar">
+      <div id="countdown">20</div>
+      <div class="progressWrap" style="margin-top:6px;">
+        <div id="progressBar" class="progressBar" style="background:rgb(82, 203, 251); width:100%;"></div>
+      </div>
+    </div>
+    <div id="streetview"></div>
+    <div class="options" id="options"></div>
+    <div class="infoBar">
+      <div class="scoreBox" id="progressText">第 0/5 題　總分：0</div>
+      <div class="statusMsg" id="statusMsg"></div>
+      <div>
+        <button id="nextBtn" class="controlBtn hidden">下一題</button>
+        <button id="restartBtn" class="controlBtn hidden">再玩一次</button>
+        <button id="rankBtn" class="controlBtn hidden">看排名</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+/* -------------------------
+   資料與常數
+   ------------------------- */
+const questions = [
+  { lat: 25.0478, lng: 121.5170, correct: "台北車站", options: ["台北車站", "中山站", "西門站"] },
+  { lat:25.014426, lng:121.533187, correct: "公館站", options: ["公館站", "台大醫院站", "古亭站"] },
+  { lat:25.040927, lng:121.559590, correct: "國父紀念館站", options: ["大巨蛋", "國父紀念館站", "忠孝新生"] },
+  { lat:25.053582, lng: 121.520582, correct:"中山站", options:["台北車站","雙連","中山站"] },
+  { lat:25.070517, lng:121.521985, correct:"圓山站", options:["圓山站","花博站","劍潭站"] },
+  { lat: 25.034096, lng:121.565428, correct: "台北101/世貿站", options: ["象山", "台北101/世貿站", "信義安和"] },
+  { lat: 25.0422, lng: 121.5083, correct: "西門站", options: ["西門站", "龍山寺站", "台北車站"] },
+  // 文湖線 (Brown Line)
+  { lat: 25.043786, lng:121.529503, correct: "忠孝新生站", options: [ "忠孝敦化站", "南京復興站","忠孝新生站"] }, // 遠東SOGO復興館正門口，捷運站體共構
+  { lat: 24.998912, lng: 121.581192, correct: "動物園站", options: [ "木柵站", "動物園站","萬芳社區站"] },     // 台北市立動物園大門口，捷運站正對面
+  { lat: 25.061782, lng: 121.550992, correct: "松山機場站", options: ["松山機場站", "中山國中站", "行天宮站"] },   // 松山機場國際線航廈前，捷運站出口
+  // 淡水信義線 (Red Line)
+  { lat: 25.033779, lng: 121.519223, correct: "中正紀念堂站", options: ["東門站", "中正紀念堂站", "台大醫院站"] }, // 自由廣場牌樓前，捷運5號出口旁
+  { lat: 25.033371, lng: 121.537463, correct: "大安森林公園站", options: ["大安森林公園站", "東門站", "科技大樓站"] }, // 大安森林公園站陽光大廳，捷運站體共構
+  { lat: 25.086609, lng: 121.525527, correct: "劍潭站", options: ["劍潭站", "士林站", "芝山站"] }, // 中正路與文林路交叉口，捷運1號出口旁
+  { lat: 25.167961, lng: 121.443651, correct: "淡水站", options: [ "紅樹林站","淡水站", "竹圍站"] },         // 淡水老街河岸廣場，星巴克前
+
+  // 松山新店線 (Green Line)
+  { lat: 25.051586, lng: 121.549513, correct: "台北小巨蛋站", options: ["台北小巨蛋站", "台北大巨蛋站", "國父紀念館站"] }, // 台北小巨蛋敦化北路入口，捷運2號出口對面
+  { lat: 24.991815, lng: 121.541365, correct: "景美站", options: ["大坪林站", "萬隆站", "景美站"] },         // 景美夜市入口，景文街上
+  { lat: 24.957951, lng: 121.537088, correct: "新店站", options: ["新店站", "新店區公所站", "小碧潭站"] },       // 碧潭吊橋東岸入口，捷運站旁
+
+  // 中和新蘆線 (Orange Line)
+  { lat: 25.015443, lng: 121.515888, correct: "頂溪站", options: ["古亭站", "頂溪站", "永安市場站"] },       // 永和路二段與中興街口，捷運1號出口旁
+  { lat: 25.062504, lng: 121.533471, correct: "行天宮站", options: ["行天宮站", "中山國小站", "松江南京站"] },   // 行天宮正門口，民權東路上
+  // 板南線 (Blue Line)
+  { lat: 25.036733, lng: 121.499814, correct: "龍山寺站", options: ["西門站", "龍山寺站", "江子翠站"] },       // 艋舺龍山寺正門口，捷運站對面
+];
+
+const TOTAL_PER_ROUND = 5;
+const TIME_PER_QUESTION = 20;
+
+/* -------------------------
+   遊戲狀態變數
+   ------------------------- */
+let selectedQuestions = [], currentIndex = 0, totalScore = 0;
+let panorama = null, mapsApiLoaded = false, answerLocked = false;
+let timerInterval = null, startTimeMs = 0;
+let playerName = '';
+
+/* -------------------------
+   DOM references（包含補上漏宣告的 rankBtn）
+   ------------------------- */
+const startScreen = document.getElementById('startScreen');
+const startBtn = document.getElementById('startBtn');
+const nameInput = document.getElementById('nameInput');
+const gameArea = document.getElementById('gameArea');
+const streetviewDiv = document.getElementById('streetview');
+const optionsDiv = document.getElementById('options');
+const countdownEl = document.getElementById('countdown');
+const progressBarEl = document.getElementById('progressBar');
+const progressText = document.getElementById('progressText');
+const statusMsg = document.getElementById('statusMsg');
+const nextBtn = document.getElementById('nextBtn');
+const restartBtn = document.getElementById('restartBtn');
+const nextScreen = document.getElementById('nextScreen');
+const rankBtn = document.getElementById('rankBtn'); 
+const topBar =document.querySelector('.topBar');
+
+/* -------------------------
+   Google Maps callback（原本你有的）
+   ------------------------- */
+function initMap(){ mapsApiLoaded = true; }
+window.initMap = initMap;
+
+/* -------------------------
+   ensurePanorama(pos, callback)
+   ------------------------- */
+function ensurePanorama(pos, callback){
+  if (typeof pos === 'function') { callback = pos; pos = null; }
+  if (!mapsApiLoaded) {
+    console.warn('maps api 尚未載入');
+    return;
+  }
+  if (!panorama) {
+    panorama = new google.maps.StreetViewPanorama(streetviewDiv, {
+      position: { lat:25.0478, lng:121.5170 },
+      pov: { heading:0, pitch:0 }, zoom:1, visible:true,
+      disableDefaultUI:true, linksControl:false, clickToGo:false,
+      scrollwheel:false, disableDoubleClickZoom:true
+    });
+  }
+  if (pos && pos.lat != null && pos.lng != null) {
+    panorama.setPosition(pos);
+  }
+  if (typeof panorama.getStatus === 'function' && panorama.getStatus() === google.maps.StreetViewStatus.OK) {
+    callback?.();
+    return;
+  }
+  google.maps.event.addListenerOnce(panorama, 'status_changed', () => {
+    if (panorama.getStatus && panorama.getStatus() === google.maps.StreetViewStatus.OK) {
+      callback?.();
+    } else {
+      console.warn("Street View 載入失敗，狀態:", panorama.getStatus());
+      callback?.();
+    }
+  });
+}
+
+/* -------------------------
+   遊戲流程函式
+   ------------------------- */
+function startGame(){
+  if (!mapsApiLoaded) { alert('Google Maps API 未載入'); return; }
+  playerName = nameInput.value.trim();
+  if (!playerName) {
+      alert('請輸入你的名字！');
+      return;
+  }
+  
+  localStorage.setItem('playerName', playerName);
+  topBar.style.display='block'; 
+  selectedQuestions = shuffleArray([...questions]).slice(0, TOTAL_PER_ROUND);
+  currentIndex = 0; totalScore = 0;
+  startScreen.style.display = 'none'; gameArea.style.display = 'flex';
+  streetviewDiv.style.display = 'block';
+  restartBtn.classList.add('hidden'); nextBtn.classList.add('hidden'); rankBtn.classList.add('hidden');
+  loadQuestion(currentIndex);
+}
+
+function loadQuestion(index){
+  const q = selectedQuestions[index];
+  if (!q) return;
+  answerLocked = false;
+  statusMsg.textContent = '';
+  nextBtn.classList.add('hidden');
+
+  progressText.textContent = `第 ${index+1}/${TOTAL_PER_ROUND} 題　總分：${totalScore}`;
+
+  ensurePanorama({ lat: q.lat, lng: q.lng }, () => {
+    setTimeout(()=>{
+          startTimer();
+    },2100)
+  });
+
+  optionsDiv.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'optionBtn'; btn.textContent = opt;
+    btn.onclick = () => handleAnswer(opt);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function startTimer(){
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  startTimeMs = Date.now();
+  updateCountdownUI(TIME_PER_QUESTION);
+  timerInterval = setInterval(() => {
+    const elapsed = (Date.now() - startTimeMs) / 1000;
+    const timeLeft = Math.max(0, TIME_PER_QUESTION - elapsed);
+    updateCountdownUI(timeLeft);
+    if (timeLeft <= 0) { clearInterval(timerInterval); timerInterval = null; handleTimeUp(); }
+  }, 100);
+}
+
+function updateCountdownUI(timeLeft){
+  const sec = Math.max(0, Math.ceil(timeLeft));
+  countdownEl.textContent = sec;
+  const pct = Math.max(0, (timeLeft / TIME_PER_QUESTION) * 100);
+  progressBarEl.style.width = pct + '%';
+  if (pct > 60) progressBarEl.style.background = 'rgb(82, 203, 251)';
+  else if (pct > 30) progressBarEl.style.background = 'rgb(246, 246, 142)';
+  else progressBarEl.style.background = 'linear-gradient(90deg,#ff5252,#d50000)';
+}
+
+/* -------------------------
+   答題 / 計分
+   ------------------------- */
+function handleAnswer(choice){
+  if (answerLocked) return; answerLocked = true;
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+
+  const q = selectedQuestions[currentIndex];
+  const elapsed = startTimeMs ? (Date.now() - startTimeMs) / 1000 : TIME_PER_QUESTION;
+  const t = Math.max(0, Math.min(elapsed, TIME_PER_QUESTION));
+  const isCorrect = (choice === q.correct);
+  let earned = 0;
+  if (isCorrect) { earned = computeScore(t); totalScore += earned; }
+
+  statusMsg.innerHTML = isCorrect
+    ? `✅ 答對！花 ${t.toFixed(2)} 秒，獲得 ${earned} 分。正解：${q.correct}`
+    : `❌ 答錯！你的答案：${choice}。正解：${q.correct}。本題得 0 分。`;
+
+  [...optionsDiv.children].forEach(btn => {
+    btn.disabled = true;
+    if (btn.textContent === q.correct) btn.classList.add('correct');
+    if (!isCorrect && btn.textContent === choice) btn.classList.add('wrong');
+  });
+
+  if (currentIndex < TOTAL_PER_ROUND - 1) {
+    nextBtn.classList.remove('hidden');
+    nextBtn.onclick = () => {
+      nextBtn.classList.add('hidden');
+      nextScreen.style.display = 'flex';
+      nextScreen.style.position = "absolute";
+      currentIndex++;
+      loadQuestion(currentIndex);
+
+      nextScreen.textContent = `準備第 ${currentIndex + 1} 題`;
+      setTimeout(() => {
+        nextScreen.style.display = 'none';
+        nextScreen.style.position = "";
+      }, 2100);
+    };
+  } else {
+    restartBtn.classList.remove('hidden');
+    rankBtn.classList.remove('hidden');
+
+    restartBtn.onclick = () => {
+        window.location.href = 'googleGame.html';
+    };
+
+    rankBtn.onclick = showRanking;
+
+    statusMsg.innerHTML += `<br><strong>遊戲結束！總分：${totalScore}</strong>`;
+  }
+
+  progressText.textContent = `第 ${currentIndex+1}/${TOTAL_PER_ROUND} 題　總分：${totalScore}`;
+}
+
+function handleTimeUp(){
+  if (answerLocked) return; answerLocked = true;
+  const q = selectedQuestions[currentIndex];
+  statusMsg.innerHTML = `正解：${q.correct}。本題得 0 分。`;
+  [...optionsDiv.children].forEach(btn => {
+    btn.disabled = true;
+    if (btn.textContent === q.correct) btn.classList.add('correct');
+  });
+
+  if (currentIndex < TOTAL_PER_ROUND - 1) {
+    nextBtn.classList.remove('hidden');
+    nextBtn.onclick = () => {
+      nextBtn.classList.add('hidden');
+      nextScreen.style.display = 'flex';
+      nextScreen.style.position = "absolute";
+      nextScreen.textContent = `準備第 ${currentIndex + 2} 題`;
+      setTimeout(() => {
+        nextScreen.style.display = 'none';
+        nextScreen.style.position = "";
+        
+        currentIndex++;
+        loadQuestion(currentIndex);
+      }, 2100);
+    };
+  } else {
+    restartBtn.classList.remove('hidden');
+    rankBtn.classList.remove('hidden');
+    restartBtn.onclick = () => {
+        window.location.href = 'googleGame.html';
+    };
+    rankBtn.onclick = showRanking;
+    statusMsg.innerHTML += `<br><strong>遊戲結束！總分：${totalScore}</strong>`;
+  }
+
+  progressText.textContent = `第 ${currentIndex+1}/${TOTAL_PER_ROUND} 題　總分：${totalScore}`;
+}
+
+/* -------------------------
+   計分規則
+   ------------------------- */
+function computeScore(t){
+  // 最高分設定為 500 分
+  const maxScore = 500;
+  // 設定每秒鐘扣除的分數
+  const penaltyPerSecond = 25;
+  
+  // 將花費的時間（可能帶有小數）向下取整，得到完整的秒數
+  const secondsElapsed = Math.floor(t);
+  
+  // 計算最終得分：用最高分減去根據時間計算出的懲罰分數
+  // 使用 Math.max 確保分數最低為 0，不會出現負分
+  const finalScore = Math.max(0, maxScore - (secondsElapsed * penaltyPerSecond));
+  
+  // 返回計算後的最終分數
+  return finalScore;
+}
+
+/* -------------------------
+   工具：洗牌
+   ------------------------- */
+function shuffleArray(arr){
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* -------------------------
+   排行榜
+   ------------------------- */
+async function showRanking(){
+    console.log('showRanking called');
+    const playerName = localStorage.getItem('playerName');
+    const record = {
+        name: playerName,
+        score: totalScore
+    };
+
+    try {
+        await fetch('http://104.155.239.227:8800/rankings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(record)
+        });
+
+        window.location.href = `ranking.html?name=${encodeURIComponent(playerName)}`;
+    } catch (error) {
+        console.error('Failed to save score:', error);
+        alert('無法儲存分數到伺服器！');
+    }
+}
+
+
+/* -------------------------
+   綁定事件
+   ------------------------- */
+startBtn.addEventListener('click', startGame);
+window.addEventListener('beforeunload', () => { if (timerInterval) clearInterval(timerInterval); });
+  </script>
+
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3hJD620AbPGQU71y7xFtgZUYqh-6Gg1I&callback=initMap"></script>
+</body>
+</html>
