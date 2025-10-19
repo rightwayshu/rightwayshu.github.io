@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>RightWay - 你的專屬旅遊嚮導</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+     <!-- 引入GSAP庫 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="icon" href="img/去背logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js"></script>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Noto Sans TC", sans-serif;
+      }
+      .bg-custom-yellow {
+        background-color: #f8e47b;
+      }
+      .bg-custom-blue {
+        background-color: #89b2d3;
+      }
+      .text-custom-blue {
+        color: #284664;
+      }
+      .text-custom-yellow {
+        color: #f8e47b;
+      }
+      .btn-primary {
+        background-color: #3e81c5;
+        color: #f8e47b;
+        transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+        background-color: #f8e47b;
+        color: #284664;
+        border-color: #284664;
+      }
+      .section {
+        scroll-margin-top: 64px;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <header
+      class="sticky top-0 z-50"
+      style="background-color: #f8e47b; border-radius: 12px"
+    >
+      <nav
+        class="container mx-auto px-6 py-3 flex justify-between items-center"
+        style="padding: 5px 65px"
+        ;
+      >
+        <div
+          class="text-2xl font-bold text-custom-blue"
+          style="
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            border-radius: 20px;
+          "
+        >
+          <span></span>
+            <a href="#home">
+              <img
+                src="img/去背logo.png"
+                alt=""
+                style="width: 55px; height: 55px" /></a
+          ></span>
+          <h2>RightWay</h2>
+        </div>
+        <div
+          class="hidden md:flex space-x-10"
+          style="font-size: 18px; font-weight: 900"
+        >
+          <a class="text-gray-700 hover:text-custom-blue" href="#philosophy"
+            >我們的理念</a
+          >
+
+          <a class="text-gray-700 hover:text-custom-blue" href="#team"
+            >團隊成員</a
+          >
+          <a class="text-gray-700 hover:text-custom-blue" href="#productSection"
+            >產品介紹</a
+          >
+          <a class="text-gray-700 hover:text-custom-blue" href="#game"
+            >探探看</a
+          >
+          <a class="text-gray-700 hover:text-custom-blue" href="#contact"
+            >聯絡資訊</a
+          >
+        </div>
+        <div class="md:hidden">
+          <button class="text-gray-700 focus:outline-none" id="menu-btn">
+            <span class="material-icons">menu</span>
+          </button>
+        </div>
+      </nav>
+      <div class="hidden md:hidden" id="mobile-menu">
+        <a
+          class="block py-2 px-4 text-sm text-gray-700 hover:bg-custom-yellow"
+          href="#home"
+          >封面</a
+        >
+        <a
+          class="block py-2 px-4 text-sm text-gray-700 hover:bg-custom-yellow"
+          href="#philosophy"
+          >我們的理念</a
+        >
+        <a
+          class="block py-2 px-4 text-sm text-gray-700 hover:bg-custom-yellow"
+          href="#team"
+          >團隊成員</a
+        >
+        <a
+          class="block py-2 px-4 text-sm text-gray-700 hover:bg-custom-yellow"
+          href="#product"
+          >產品介紹</a
+        >
+        <a
+          class="block py-2 px-4 text-sm text-gray-700 hover:bg-custom-yellow"
+          href="#contact"
+          >聯絡資訊</a
+        >
+      </div>
+    </header>
+    <main>
+      <section
+        class="section min-h-screen bg-custom-yellow flex items-center justify-center relative overflow-hidden"
+        id="home"
+        style="
+          background-image: linear-gradient(
+              rgba(14, 207, 255, 0.47),
+              rgba(255, 252, 66, 0.773)
+            ),
+            url('img/bg.png');
+          background-size: cover;
+          margin-top: -3.5rem;
+        "
+      >
+        <div class="text-center z-5" style="display: flex">
+          <div class="max-w-2xl mx-auto">
+            <img
+              alt="Yellow suitcase with a blue cloud background"
+              class="w-60 md:w-50 mx-auto transform hover:scale-105 transition-transform duration-300"
+              style="width: 350px; height: 350px"
+              src="img/open.gif"
+            />
+            <h1 class="text-4xl md:text-6xl font-bold text-custom-blue mb-4">
+              RightWay
+            </h1>
+            <p
+              class="text-lg md:text-2xl text-custom-blue mb-8"
+              style="font-weight: 900"
+            >
+              你的專屬旅遊嚮導，走對的路，玩出新高度。
+            </p>
+            <a
+              class="btn-primary font-bold py-3 px-8 rounded-full border-2 border-transparent"
+              style="z-index: 2000"
+              href="#productSection"
+            >
+              探索更多
+            </a>
+          </div>
+        </div>
+      </section>
+      <div id="philosophy" style="padding-top: 50px; background-color:white;"></div>
+      <section class="bg-gray-50 p-8" id="philosophy_space">
+        <h2
+          class="text-3xl md:text-4xl font-bold text-center text-custom-blue mb-12"
+        >
+          我們的理念
+        </h2>
+        <div class="max-w-7xl mx-auto">
+          <div
+            class="flex flex-col md:flex-row items-center gap-10"
+            style="padding: 0px 40px"
+          >
+            <!-- 圖片區塊 -->
+            <div
+              class="md:w-1/2"
+              style="display: flex; justify-content: center"
+            >
+              <img
+                id="mainImage"
+                src="img/think.png"
+                alt="Our Philosophy"
+                class="w-full rounded-lg transform hover:scale-105 transition-transform duration-300"
+                style="width: 500px; height: 500px; object-fit: cover"
+              />
+            </div>
+
+            <!-- 詞條區塊 -->
+            <div
+              id="contentContainer"
+              class="md:w-1/2"
+              style="display: flex; gap: 40px; flex-direction: column"
+            >
+              <!-- 初始狀態：三個詞條 -->
+              <div id="initialContent">
+                <div
+                  class="bg-custom-blue p-5 rounded-lg shadow-lg text-white mb-8"
+                >
+                  <h3 class="text-2xl font-bold mb-4 text-custom-yellow">
+                    出去完時候總是要規劃行程?
+                  </h3>
+                  <p class="text-lg leading-relaxed">
+                    規劃行程總是令人頭痛，總是哪裡都想去，不知道該由誰來規劃?
+                  </p>
+                </div>
+
+                <div
+                  class="bg-custom-yellow p-5 rounded-lg shadow-lg text-custom-blue mb-8"
+                >
+                  <h3 class="text-2xl font-bold mb-4">
+                    找不到最符合當下的景點?
+                  </h3>
+                  <p class="text-lg leading-relaxed">
+                    景點一堆，但不知道那哪些適合自己，是不是符合當下需要?
+                  </p>
+                </div>
+
+                <div class="bg-custom-blue p-8 rounded-lg shadow-lg text-white">
+                  <h3 class="text-2xl font-bold mb-4 text-custom-yellow">
+                    需要及時調整卻不知道要取哪?
+                  </h3>
+                  <p class="text-lg leading-relaxed">
+                    有時多出來閒暇時間不知道要幹嘛，找網紅店卻又一堆資訊不知道哪個適合自己?
+                  </p>
+                </div>
+              </div>
+
+              <!-- 翻轉後：兩個詞條 -->
+              <div id="flippedContent" style="display: none">
+                <div
+                  class="bg-custom-yellow p-8 rounded-lg shadow-lg text-custom-blue mb-10"
+                >
+                  <h3 class="text-2xl font-bold mb-4">
+                    為何不能將瑣碎的決策過程變成簡單有趣的小遊戲?
+                  </h3>
+                  <p class="text-lg leading-relaxed">
+                    我們團隊致力於將複雜需要大量討論的遊玩流程進行簡化，
+                    我們想放大旅遊的小確信，將活動更加集中在當下的決策並配上最新AI技術讓景點推薦更加任性化與客製化
+                  </p>
+                </div>
+
+                <div class="bg-custom-blue p-8 rounded-lg shadow-lg text-white">
+                  <h3 class="text-2xl font-bold mb-4 text-custom-yellow">
+                    旅行，不只是到達
+                  </h3>
+                  <p class="text-lg leading-relaxed">
+                    我們相信，每一趟旅程的價值，不僅在於目的地，更在於過程中的發現與體驗。RightWay
+                    致力於為您規劃最貼近需求的路線，讓您告別觀光客的匆忙，深入在地，感受最真實的文化脈動。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="floating-btn" id="flipBtn" title="切換內容">
+          <p>解決方法</p>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+        </div>
+      </section>
+
+      <!-- 團隊成員區塊 -->
+      <section class="section py-20 " id="team" style="padding-bottom:100px ; background: linear-gradient(
+        185deg, 
+        rgba(255, 245, 211, 0.99),   /* 藍色 */
+        rgba(219, 207, 114, 0.99)    /* 深藍，透明度更低 */
+      );" 
+      >
+        <div class="container mx-auto px-6">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-center text-custom-blue mb-12"
+          >
+            團隊成員
+          </h2>
+
+          <div class="max-w-6xl mx-auto relative py-8">
+            <button class="carousel-btn prev" onclick="moveCarousel(-1)">
+              <span class="material-icons">chevron_left</span>
+            </button>
+            <div class="carousel-container">
+              <div class="carousel-track" id="carouselTrack">
+                <!-- 指導老師 -->
+                <div class="carousel-item">
+                  <div
+                    class="bg-custom-yellow p-6 rounded-lg shadow-lg text-center h-full"
+                  >
+                    <div
+                      class="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-custom-blue flex items-center justify-center team-img-border"
+                      style="border-color: #284664"
+                    >
+                      <img
+                        src="img/team-10.png"
+                        alt="指導老師"
+                        class="team-img w-full h-full object-cover"
+                        onerror="this.parentElement.innerHTML='<span class=\'material-icons text-6xl text-custom-yellow\'>person</span>'"
+                      />
+                    </div>
+                    <h3 class="text-xl font-bold text-custom-blue mb-2">
+                      劉立民
+                    </h3>
+                    <p class="text-sm text-custom-blue mb-2 font-bold">
+                      教授/機器學習、深度學習
+                    </p>
+                    <p class="text-gray-600">
+                      專長於指紋影像、機器學習與知識推論研究，擁有豐富的專業背景和豐富的研究經驗。
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 成員 1 -->
+                <div class="carousel-item">
+                  <div
+                    class="bg-custom-blue p-6 rounded-lg shadow-lg text-center text-white h-full"
+                  >
+                    <div
+                      class="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-custom-yellow flex items-center justify-center team-img-border"
+                      style="border-color: #fff5c3"
+                    >
+                      <img
+                        src="img/team-05.png"
+                        alt="成員1"
+                        class="team-img w-full h-full object-cover"
+                        onerror="this.parentElement.innerHTML='<span class=\'material-icons text-6xl text-custom-blue\'>person</span>'"
+                      />
+                    </div>
+                    <h3 class="text-xl font-bold text-custom-yellow mb-2">
+                      葉妙萱
+                    </h3>
+                    <p class="text-sm text-custom-yellow mb-2 font-bold">
+                      專案經理/組織管理
+                    </p>
+                    <p class="text-gray-100">
+                      溫柔領隊化靈感為藍圖，帶領我們安心前行的可靠嚮導。
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 成員 2 -->
+                <div class="carousel-item">
+                  <div
+                    class="bg-custom-yellow p-6 rounded-lg shadow-lg text-center h-full"
+                  >
+                    <div
+                      class="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-custom-blue flex items-center justify-center team-img-border"
+                      style="border-color: #284664"
+                    >
+                      <img
+                        src="img/team-07.png"
+                        alt="成員2"
+                        class="team-img w-full h-full object-cover"
+                        onerror="this.parentElement.innerHTML='<span class=\'material-icons text-6xl text-custom-yellow\'>person</span>'"
+                      />
+                    </div>
+                    <h3 class="text-xl font-bold text-custom-blue mb-2">
+                      紀元雅
+                    </h3>
+                    <p class="text-sm text-custom-blue mb-2 font-bold">
+                      行銷公關/行銷談判
+                    </p>
+                    <p class="text-gray-600">
+                      優雅傳訊的橋樑，使交流化為故事，讓世界因她而更靠近。
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 成員 3 -->
+                <div class="carousel-item">
+                  <div
+                    class="bg-custom-blue p-6 rounded-lg shadow-lg text-center text-white h-full"
+                  >
+                    <div
+                      class="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-custom-yellow flex items-center justify-center team-img-border"
+                      style="border-color: #fff5c3"
+                    >
+                      <img
+                        src="img/team-09.png"
+                        alt="成員3"
+                        class="team-img w-full h-full object-cover"
+                        onerror="this.parentElement.innerHTML='<span class=\'material-icons text-6xl text-custom-blue\'>person</span>'"
+                      />
+                    </div>
+                    <h3 class="text-xl font-bold text-custom-yellow mb-2">
+                      陳昱達
+                    </h3>
+                    <p class="text-sm text-custom-yellow mb-2 font-bold">
+                      程式設計/AI應用、程式開發
+                    </p>
+                    <p class="text-gray-100">
+                      以程式織夢，將靈感化為現實，點亮旅程的星光編織者。
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 成員 4 -->
+                <div class="carousel-item">
+                  <div
+                    class="bg-custom-yellow p-6 rounded-lg shadow-lg text-center h-full"
+                  >
+                    <div
+                      class="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-custom-blue flex items-center justify-center team-img-border"
+                      style="border-color: #284664"
+                    >
+                      <img
+                        src="img/team-06.png"
+                        alt="成員4"
+                        class="team-img w-full h-full object-cover"
+                        onerror="this.parentElement.innerHTML='<span class=\'material-icons text-6xl text-custom-yellow\'>person</span>'"
+                      />
+                    </div>
+                    <h3 class="text-xl font-bold text-custom-blue mb-2">
+                      謝昀庭
+                    </h3>
+                    <p class="text-sm text-custom-blue mb-2 font-bold">
+                      視覺設計/美術
+                    </p>
+                    <p class="text-gray-600">
+                      以色彩點亮旅途，用設計描繪想像，帶領我們走向美好風景。
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 成員 5 -->
+                <div class="carousel-item">
+                  <div
+                    class="bg-custom-blue p-6 rounded-lg shadow-lg text-center text-white h-full"
+                  >
+                    <div
+                      class="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-custom-yellow flex items-center justify-center team-img-border"
+                      style="border-color: #fff5c3"
+                    >
+                      <img
+                        src="img/team-08.png"
+                        alt="成員5"
+                        class="team-img w-full h-full object-cover"
+                        onerror="this.parentElement.innerHTML='<span class=\'material-icons text-6xl text-custom-blue\'>person</span>'"
+                      />
+                    </div>
+                    <h3 class="text-xl font-bold text-custom-yellow mb-2">
+                      胡凱晧
+                    </h3>
+                    <p class="text-sm text-custom-yellow mb-2 font-bold">
+                      市場分析/競品分析
+                    </p>
+                    <p class="text-gray-100">
+                      行走城市間，以感官描繪旅途，為探索者留下最真實的足跡。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="carousel-btn next" onclick="moveCarousel(1)">
+              <span class="material-icons">chevron_right</span>
+            </button>
+
+            <div class="carousel-dots" id="carouselDots"></div>
+        </div>
+      </section>
+
+      <!-- 產品介紹區塊 -->
+      <section class="section  " id="productSection" style="background-color: rgba(128, 108, 255, 0.777);">
+
+
+         <!-- 產品展示主區域 -->
+    <section class="product-section">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-center text-custom-yellow pt-3 pb-3"
+            style="background:rgba(255, 0, 0, 0);"
+          >
+            產品介紹
+          </h2>
+
+        <!-- 提示文字 -->
+        <div class="hint">👆 點擊畫面切換布局</div>
+        
+        <!-- 內容容器 -->
+        <div class="product-container" >
+
+            <div class="final-show ">
+              <h1>Rightway</h1>
+              <button>即將上市</button>
+            </div>
+
+                    <!-- 📝 背景影片 -->
+            <video class="background-video" id="backgroundVideo" autoplay muted loop>
+                 <source src="img/AI.mp4" type="video/mp4">
+                 您的瀏覽器不支持視頻標籤。
+            </video>
+
+            <!-- 手機元素 -->
+            <div class="phone" id="phone">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+                    <video class="phone-video" autoplay muted loop>
+                        <source src="img/PP_1.mp4" type="video/mp4">
+                        您的瀏覽器不支持視頻標籤。
+                    </video>
+                </div>
+            </div>
+            
+            <!-- 黃色卡片 -->
+            <div class="card yellow-card" id="yellowCard">
+                <div class="card-content">
+                    <h3>AI智能解析</h3>
+                    <p>想到啥就說啥，AI會依你說的任何話給出最優景點推薦</p>
+                </div>
+            </div>
+            
+            <!-- 藍色卡片 -->
+            <div class="card blue-card" id="blueCard">
+                <div class="card-content">
+                    <h3>簡單好操作</h3>
+                    <p>沒有過多複雜設計，點開即可輸入，就像chatGPT一樣</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 頁面指示器 -->
+        <div class="page-indicator">
+            <div class="dot active" data-page="1"></div>
+            <div class="dot" data-page="2"></div>
+            <div class="dot" data-page="3"></div>
+            <div class="dot" data-page="4"></div>
+        </div>
+    </section>
+
+      </section>
+      
+      <!--探探看-->
+    <section class="section look" id="game">
+      <div class="video-background">
+        <video autoplay muted loop>
+            <source src="img/game_b.mp4" type="video/mp4">
+            您的瀏覽器不支援影片播放。
+        </video>
+        <div class="overlay"></div>
+      </div>
+    
+    <!-- 主要內容區域 -->
+      <section class="section-container">
+        <!-- 探探看標題區域 -->
+        <div class="title-section">
+            <h1 class="title-text">探探看</h1>
+            <p>你對台北地點知多少，你能猜出圖片在哪嗎?</p>
+            <a href="googleGame.html"><button class="change-button" id="changeButton">換你了</button></a>
+        </div>
+        
+        <!-- 排行榜區域 -->
+        <div class="leaderboard-section">
+        <h2 class="leaderboard-title">排行榜</h2>
+          <div class="leaderboard-list-container">
+            <ul id="leaderboard-list" class="leaderboard-list">
+            </ul>
+          </div>
+       </div>
+
+    <script>
+      window.onload = function() {
+        fetch('http://104.155.239.227:8800/rankings')
+          .then(response => response.json())
+          .then(data => {
+            console.log("dataifo"+data)
+            const leaderboardList = document.getElementById('leaderboard-list');
+            leaderboardList.innerHTML = ''; // 清空現有列表
+            data.forEach(item => {
+              const li = document.createElement('li');
+              li.classList.add('leaderboard-item');
+              li.innerHTML = `<span class='name'>${item.name}</span><span class='score'>${item.score}</span><span class='date'>${item.date.slice(0,10)}.</span>`;
+              leaderboardList.appendChild(li);
+            });
+          })
+          .catch(error => console.error('Error fetching rankings:', error));
+      };
+    </script>
+      </section>
+
+    </section>
+
+
+      <!-- 聯絡資訊區塊-->
+      <section class="section py-20 bg-custom-blue text-white" id="contact">
+        <div class="container mx-auto px-6 text-center">
+          <h2 class="text-3xl md:text-4xl font-bold mb-8 text-custom-yellow">
+            聯絡我們
+          </h2>
+          <p class="text-lg mb-8 max-w-2xl mx-auto">
+            對 RightWay 有任何問題或建議嗎？<br />歡迎透過以下方式與我們聯繫，我們將盡快回覆您。
+          </p>
+          <div class="flex justify-center items-center space-x-6 text-lg">
+            <div class="flex items-center">
+              <span class="material-icons mr-2">email</span>
+              <span>rightway.shu@gmail.com</span>
+            </div>
+
+          </div>
+          <div class="mt-8 flex justify-center space-x-4">
+            <a
+              class="text-white hover:text-custom-yellow transition-colors"
+              href="https://www.instagram.com/rightway.trip?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+              ><svg
+                aria-hidden="true"
+                class="w-6 h-6"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.013-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.08 2.525c.636-.247 1.363-.416 2.427-.465C9.531 2.013 9.885 2 12.315 2zM12 7.044c-2.749 0-4.969 2.22-4.969 4.969s2.22 4.969 4.969 4.969 4.969-2.22 4.969-4.969S14.749 7.044 12 7.044z m0 8.162c-1.768 0-3.2-1.432-3.2-3.2s1.432-3.2 3.2-3.2 3.2 1.432 3.2 3.2-1.432 3.2-3.2 3.2z m4.908-8.212a1.182 1.182 0 110-2.364 1.182 1.182 0 010 2.364z"
+                  fill-rule="evenodd"
+                ></path></svg
+            ></a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="bg-gray-800 text-white py-4">
+      <div class="container mx-auto px-6 text-center text-sm">
+        <p>© 2024 RightWay. All Rights Reserved.</p>
+      </div>
+    </footer>
+    <script>
+      const menuBtn = document.getElementById("menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+      menuBtn.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+      });
+      // Smooth scrolling
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+          if (mobileMenu.classList.contains("hidden") === false) {
+            mobileMenu.classList.add("hidden");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

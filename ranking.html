@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>排行榜</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body { margin:0; font-family:"Helvetica Neue",Arial,sans-serif; background:#0b1220; color:#fff; }
+    .container { max-width:600px; margin:40px auto; padding:20px; }
+    h1 { text-align:center; margin-bottom:20px; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; }
+    th,td { padding:12px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.2); }
+    th { background:rgba(255,255,255,0.1); }
+    tr:nth-child(even){ background:rgba(255,255,255,0.05); }
+    .backBtn {
+      margin-top:20px;
+      padding:12px 20px;
+      border:none;
+      border-radius:8px;
+      background:#ffbe2e;
+      color:#000;
+      font-size:16px;
+      cursor:pointer;
+      display:block;
+    }
+    .currentUser { background: #2962ff !important; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>排行榜</h1>
+    <table id="rankTable">
+      <thead>
+        <tr>
+          <th>名次</th>
+          <th>名字</th>
+          <th>分數</th>
+          <th>時間</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+          <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-top:20px;">
+        <button class="backBtn" onclick="window.location.href='googleGame.html'">回到遊戲</button>
+        <button class="backBtn" onclick="window.location.href='index.html'">返回首頁</button>
+      </div>
+
+  </div>
+
+  <script>
+    const tbody = document.querySelector("#rankTable tbody");
+    const params = new URLSearchParams(window.location.search);
+    const currentPlayerName = params.get('name');
+
+    async function fetchRankings() {
+        try {
+            const response = await fetch('http://104.155.239.227:8800/rankings');
+            if (!response.ok) {
+                throw new Error('Failed to fetch rankings');
+            }
+            const rankings = await response.json();
+
+            tbody.innerHTML = ''; // Clear existing rows
+
+            if (rankings.length === 0) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td colspan="4">目前沒有紀錄</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+
+            rankings.forEach((r, idx) => {
+                const tr = document.createElement("tr");
+                const name = r.name || '匿名';
+                const score = r.score || 0;
+                const date = r.date ? new Date(r.date).toLocaleString() : 'N/A';
+
+                tr.innerHTML = `<td>${idx + 1}</td><td>${name}</td><td>${score}</td><td>${date}</td>`;
+
+                if (name === currentPlayerName && !tbody.querySelector('.currentUser')) {
+                    tr.classList.add('currentUser');
+                }
+
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error('Error fetching rankings:', error);
+            tbody.innerHTML = `<tr><td colspan="4">無法載入排行榜</td></tr>`;
+        }
+    }
+
+    fetchRankings();
+  </script>
+</body>
+</html>
