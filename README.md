@@ -1,2 +1,2 @@
-# rightwatshu..github.io
+# rightwatshu.github.io
 web
